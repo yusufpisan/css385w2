@@ -25,25 +25,21 @@ namespace ClassExample
 
         Vector2 mInitPos;
         Vector2 mDir;
-        float mSize;
 
         public VelocityBlock(Vector2 initPos, Vector2 dir) 
         {
             mInitPos = initPos;
-            mSize = dir.Length();
             mDir = dir;
         }
 
-        public void UpdateVelocityBlock(Vector2 dir, float size)
+        public void UpdateVelocityBlock(Vector2 delta)
         {
-            mSize += size;
-            mDir += dir;
-            mDir.Normalize();
+            mDir += delta;
 
-            Vector2 endPos = mInitPos + (mSize * mDir * kDirDrawFactor);
+            Vector2 endPos = mInitPos + (mDir * kDirDrawFactor);
             SetEndPoints(mInitPos, endPos, kDirSize);
 
-            Velocity = mSize * mDir;
+            Velocity = mDir;
         }
     }
 }

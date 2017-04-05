@@ -49,19 +49,16 @@ namespace ClassExample
             float sizeOnTangent = Vector2.Dot(toCenter, tangent); // may be negative, its OK!
             Vector2 normal = toCenter - (sizeOnTangent * tangent);
 
-            /// Compute project size on the normal vector
-            normal.Normalize();
-            float sizeOnNormal = Vector2.Dot(toCenter, normal);
-                    /// 
-                    /// An alternate, and seeming more straightforward approach would be:
-                    ///           float sizeOnNormal = normal.Length();  // to compute the size or normal
-                    ///           vector normal /= sizeOnNormal;         // to normalize the normal vector
-                    ///
-                    /// One problem with this alternate approach is that, the "sizeOnNormal" is now an absolute
-                    /// value quantity and does not inlcude information on direction, where is the "dotProduct"
-                    /// approach above gives us a "signed-value" were we know if toCenter is in the direction of
-                    /// the normal vector" or in the opposite direction of the norml direciton.
-                    /// 
+            float sizeOnNormal = 0f;
+            if (normal.LengthSquared() > float.Epsilon)
+            {
+                normal.Normalize();
+                sizeOnNormal = Vector2.Dot(toCenter, normal);
+            }
+            else
+            {
+                normal = Vector2.Zero;
+            }
 
             Vector2 tangentEndPos = from + (kDrawSize * sizeOnTangent * tangent);
             mStart.Center = from;

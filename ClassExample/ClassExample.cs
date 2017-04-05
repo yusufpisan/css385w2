@@ -28,6 +28,8 @@ namespace ClassExample
         private MySoccer mBall;
         private VelocityBlock mVBlock;
 
+        private float mElasticiy = 1f, mFriction = 0f;
+
 
         protected override void InitializeWorld()
         {
@@ -44,35 +46,39 @@ namespace ClassExample
             if (GamePad.ButtonBackClicked())
                 Exit();
 
-            #region Pause everything
+            #region Elasticity and Friction by Left ThumbStick
+            mElasticiy += 0.02f * GamePad.ThumbSticks.Left.X;
+            mFriction += 0.02f * GamePad.ThumbSticks.Left.Y;
+            #endregion
+
             if (GamePad.ButtonXClicked())
                 World.Paused = !World.Paused;
-            
-            if (World.Paused)
-                return;
-            #endregion
 
-            #region shoot the ball
-            if (GamePad.ButtonAClicked())
+            if (!World.Paused)
             {
-                Vector2 velocity = mVBlock.VelocityDirection * mVBlock.Speed;
-                mBall.ShootSoccer(kInitPosition, velocity);
+
+
+                #region shoot the ball
+                if (GamePad.ButtonAClicked())
+                {
+                    Vector2 velocity = mVBlock.VelocityDirection * mVBlock.Speed;
+                    mBall.ShootSoccer(kInitPosition, velocity);
+                }
+                #endregion
+
+                #region Update Velocity Dir and size by Right thumbStick
+                mVBlock.UpdateVelocityBlock(GamePad.ThumbSticks.Right);
+                #endregion
+
+                #region tell the Ball to update itself
+                mBall.Update(mElasticiy, mFriction);
+                #endregion
+
+                #region Rotate the Block
+                mBlock.UpdateBlock(Vector2.Zero, GamePad.Triggers.Right);
+                #endregion
             }
-            #endregion
-
-            #region Update Velocity Dir and size by thumbSticks
-            mVBlock.UpdateVelocityBlock(GamePad.ThumbSticks.Right, GamePad.ThumbSticks.Left.Y);
-            #endregion
-
-            #region tell the Ball to update itself
-            mBall.Update();
-            #endregion
-
-            #region Rotate the Block
-            mBlock.UpdateBlock(Vector2.Zero, GamePad.Triggers.Right);
-            #endregion
-
-            EchoToTopStatus("Block rotated angle=" + mBlock.RotateAngle);
+            EchoToTopStatus("Elasticity[LeftThumb.X]=" + mElasticiy + "  Friction[LeftThumb.Y]=" + mFriction);
             EchoToBottomStatus("Vector Direction" + mVBlock.VelocityDirection + " Size: " + mVBlock.Speed);
         }
 

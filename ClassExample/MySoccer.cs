@@ -51,14 +51,21 @@ namespace ClassExample
             mReflection = new List<XNACS1Primitive>();
         }
 
-        public void Update()
+        public void Update(float elasticity, float friction)
         {
-            if (Collided(mTargetBlock))
+            
+            if (    // HasNonZeroVelocity() && 
+                    Collided(mTargetBlock)
+                )
             {
                 VectorComponents currentV = new VectorComponents();
                 currentV.Update(Center, Center + Velocity, mTargetBlock.FrontDirection);
 
-                Vector2 newVelocity = currentV.TangentVector() - currentV.NormalVector();
+                //
+                // Only thing interesting here!!
+                Vector2 newVelocity = (currentV.TangentVector() * (1 - friction))
+                                    - (currentV.NormalVector() * elasticity);
+
                 XNACS1Rectangle reflectV = new XNACS1Rectangle();
                 reflectV.SetEndPoints(Center, Center + (newVelocity * kDrawSize), 0.3f);
                 reflectV.Color = Color.DeepPink;
