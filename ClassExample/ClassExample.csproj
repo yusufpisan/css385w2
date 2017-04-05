@@ -39,8 +39,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Blocks\MyBlock.cs" />
+    <Compile Include="Blocks\VelocityBlock.cs" />
     <Compile Include="ClassExample.cs" />
-    <Compile Include="MyBlock.cs" />
     <Compile Include="MySoccer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
