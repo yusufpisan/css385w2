@@ -26,7 +26,7 @@ namespace ClassExample
 
         private MyBlock mBlock;
         private MySoccer mBall;
-        private VectorComponents mShowVecA, mShowVecB;
+        private VelocityBlock mVBlock;
 
 
         protected override void InitializeWorld()
@@ -35,13 +35,8 @@ namespace ClassExample
             DefineGrid();
 
             mBlock = new MyBlock();
-            mBall = new MySoccer();
-
-            mShowVecA = new VectorComponents();
-            mShowVecA.HideVectorComponents();
-
-            mShowVecB = new VectorComponents();
-            mShowVecB.HideVectorComponents();
+            mBall = new MySoccer(mBlock);
+            mVBlock = new VelocityBlock(kInitPosition, new Vector2(1, 1));
         }
 
         protected override void UpdateWorld()
@@ -49,29 +44,36 @@ namespace ClassExample
             if (GamePad.ButtonBackClicked())
                 Exit();
 
-            // Ball
-            mBall.UpdateSoccerPosition(GamePad.ThumbSticks.Left);
-
-            // Block
-            mBlock.UpdateBlock(GamePad.ThumbSticks.Right, GamePad.Triggers.Right);
+            #region Pause everything
+            if (GamePad.ButtonXClicked())
+                World.Paused = !World.Paused;
             
-            if (GamePad.Buttons.A == ButtonState.Pressed)
-            {
-                mShowVecA.Update(mBlock.Center, mBall.Center, mBlock.FrontDirection);
-            }
-            else 
-            {
-                mShowVecA.HideVectorComponents();
-            }
+            if (World.Paused)
+                return;
+            #endregion
 
-            if (GamePad.Buttons.B == ButtonState.Pressed)
+            #region shoot the ball
+            if (GamePad.ButtonAClicked())
             {
-                mShowVecB.Update(mBall.Center, mBlock.Center, mBlock.FrontDirection, mBlock.NormalDirection);
-            } else {
-                mShowVecB.HideVectorComponents();
+                Vector2 velocity = mVBlock.VelocityDirection * mVBlock.Speed;
+                mBall.ShootSoccer(kInitPosition, velocity);
             }
+            #endregion
+
+            #region Update Velocity Dir and size by thumbSticks
+            mVBlock.UpdateVelocityBlock(GamePad.ThumbSticks.Right, GamePad.ThumbSticks.Left.Y);
+            #endregion
+
+            #region tell the Ball to update itself
+            mBall.Update();
+            #endregion
+
+            #region Rotate the Block
+            mBlock.UpdateBlock(Vector2.Zero, GamePad.Triggers.Right);
+            #endregion
 
             EchoToTopStatus("Block rotated angle=" + mBlock.RotateAngle);
+            EchoToBottomStatus("Vector Direction" + mVBlock.VelocityDirection + " Size: " + mVBlock.Speed);
         }
 
         private void DefineGrid()
